@@ -2,7 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 
-import addissuess from '../page/addissuess'
+import lssuesList from '../page/issuesList'
+import addIssues from '../page/addIssues'
 
 Vue.use(Router)
 
@@ -10,13 +11,13 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Hello',
-      component: HelloWorld
+      name: 'issuesList',
+      component: lssuesList
     },
     {
-      path: '/addissuess',
-      name: 'addissuess',
-      component: addissuess
+      path: '/addIssues',
+      name: 'addIssues',
+      component: addIssues
     }
   ]
 })
