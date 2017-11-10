@@ -11,5 +11,10 @@
 </script>
 
 <style>
-
+#app {
+	margin: 20px;
+}
+.ivu-modal-wrap {
+	position: absolute;
+}
 </style>

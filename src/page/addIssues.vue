@@ -131,9 +131,16 @@
 							picture: this.formData.formItem.picture
 						}).then((res) => {
 							if(res.status == 0) {
-								this.data = res.data;
 								this.$Message.success(res.message);
-								this.$router.push('/')
+								this.closeParent();
+								// 提交成功重置表单
+								this.$refs["formData"].resetFields();
+								this.formData.formItem.status = '';
+								this.formData.formItem.type = '';
+								this.formData.formItem.qsensor = '';
+								this.formData.formItem.prio = '';
+								this.formData.formItem.description = '';
+								this.formData.formItem.picture = '';
 							} else {
 								this.$Message.error(res.message);
 							}
@@ -146,7 +153,14 @@
 			// 切换issues日期
 			changeIssuesDate(e) {
 				this.formData.formItem.issueDate = e;
+			},
+			// 从父级关弹层
+			closeParent: function() {
+				this.$emit("closeNewIssues")
 			}
+		},
+		mounted() {
+
 		}
 	}
 </script>
