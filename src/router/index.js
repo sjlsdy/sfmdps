@@ -8,16 +8,25 @@ import addIssues from '../page/addIssues'
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'issuesList',
-      component: lssuesList
-    },
-    {
-      path: '/addIssues',
-      name: 'addIssues',
-      component: addIssues
-    }
-  ]
+	routes: [{
+			path: '/',
+			name: 'issuesList',
+			component: lssuesList
+		},
+		{
+			path: '/addIssues',
+			name: 'addIssues',
+			component: addIssues
+		},
+		{
+			path: '/main',
+			name: 'main',
+			component: HelloWorld,
+			children: [{
+				path: '/addIssues',
+				name: 'addIssues',
+				component: HelloWorld
+			}]
+		}
+	]
 })

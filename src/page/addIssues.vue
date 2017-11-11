@@ -1,9 +1,9 @@
 <template>
 	<div>
-		<Form ref="formData" :model="formData.formItem" :rules="formData.ruleValidate" :label-width="80">
-			<FormItem label="status" prop="status">
-				<Select v-model="formData.formItem.status">
-					<Option v-for="item in formData.formItem.statusArr" :value="item.value" :key="item.value">{{ item.label }}</Option>
+		<Form ref="formData" :model="formData.formItem" :rules="formData.ruleValidate" :label-width="120">
+			<FormItem label="issueType" prop="issueType">
+				<Select v-model="formData.formItem.issueType">
+					<Option v-for="item in formData.formItem.issueTypeArr" :value="item.value" :key="item.value">{{ item.label }}</Option>
 				</Select>
 			</FormItem>
 			<FormItem label="type" prop="type">
@@ -23,13 +23,28 @@
 				<Input v-model="formData.formItem.prio" placeholder=""></Input>
 			</FormItem>
 			<FormItem label="description">
-				<Input v-model="formData.formItem.description" placeholder=""></Input>
+				<Input v-model="formData.formItem.description" type="textarea" :rows="4" placeholder=""></Input>
 			</FormItem>
 			<FormItem label="picture">
-				<Input v-model="formData.formItem.picture" placeholder=""></Input>
+				<Row>
+					<Col span="24">
+					<Upload action="/www/?m=issues&c=issues&a=uploadimg" type="drag" :show-upload-list="false" :on-success="uploadSuccess" :on-error="uploadError">
+						<div style="padding: 20px 0">
+							<Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+							<p>Click or drag files here to upload</p>
+						</div>
+					</Upload>
+					</Col>
+					<Col span="20">
+					</Col>
+				</Row>
+				<div style="width: 200px;" v-if="formData.formItem.picture != ''">
+					<br />
+					<img :src="formData.formItem.picture" width="100%" style="display: block; border: #DDDDDD 1px solid; padding: 4px;" />
+				</div>
 			</FormItem>
 			<FormItem>
-				<Button type="primary" @click="submitForm">提交issuess</Button>
+				<Button type="primary" @click="submitForm">Submit issue</Button>
 			</FormItem>
 		</Form>
 	</div>
@@ -43,8 +58,8 @@
 				data: '',
 				formData: {
 					formItem: {
-						status: '',
-						statusArr: [{
+						issueType: '',
+						issueTypeArr: [{
 							value: 'SFM',
 							label: 'SFM'
 						}, {
@@ -88,9 +103,9 @@
 						picture: ''
 					},
 					ruleValidate: {
-						status: [{
+						issueType: [{
 							required: true,
-							message: 'status 必须填',
+							message: '请选择issue分类',
 							trigger: 'blur'
 						}],
 						type: [{
@@ -122,7 +137,7 @@
 				this.$refs['formData'].validate((valid) => {
 					if(valid) {
 						fetchPostUrlencoded('/www/?m=issues&c=issues&a=add_issues', {
-							status: this.formData.formItem.status,
+							issueType: this.formData.formItem.issueType,
 							type: this.formData.formItem.type,
 							issueDate: this.formData.formItem.issueDate,
 							qsensor: this.formData.formItem.qsensor,
@@ -149,6 +164,18 @@
 						this.$Message.error('表单未填写完整');
 					}
 				})
+			},
+			uploadSuccess(response, file, fileList) {
+				if(response.status == 0) {
+					this.$Message.success(response.message);
+					this.formData.formItem.picture = response.data.url;
+				} else {
+					this.$Message.error(response.message);
+				}
+			},
+			uploadError(error, file, fileList) {
+				this.$Message.error('上传失败');
+				this.$Message.error('可能上传的文件过大');
 			},
 			// 切换issues日期
 			changeIssuesDate(e) {

@@ -1,32 +1,37 @@
 <template>
 	<div>
-		<Row>
-			<Col span="6">
-			<Button type="primary" long @click="modal1 = true"><Icon type="plus-round"></Icon> new issues</Button>
-			</Col>
-		</Row>
+		<div style="width: 200px;">
+			<Button type="primary" long @click="modal1 = true"><Icon type="plus-round"></Icon> New issue</Button>
+		</div>
 		<br />
-		<Tabs :animated="false" @on-click="changeTabs">
-			<TabPane label="meetingTopic" name="Meeting Topic"></TabPane>
+		<Tabs type="card" :animated="false" @on-click="changeTabs">
+			<TabPane label="Meeting Topic" name="meetingTopic"></TabPane>
 			<TabPane label="SFM" name="SFM"></TabPane>
 			<TabPane label="DPS" name="DPS"></TabPane>
-			<TabPane label="qCircle" name="Q-circle"></TabPane>
+			<TabPane label="Q-circle" name="qCircle"></TabPane>
 			<TabPane label="observation" name="Observation"></TabPane>
-			<TabPane label="closed" name="Closed"></TabPane>
+			<TabPane label="Closed" name="closed"></TabPane>
 		</Tabs>
-		<br />
-		<Page :total="page.total" :current="page.current" :page-size="page.size" show-total @on-change="chnagePage"></Page>
+		<Tabs type="card" :animated="false" @on-click="changeTopic" v-if="page.issueType == 'meetingTopic'">
+			<TabPane label="SFM" name="SFM"></TabPane>
+			<TabPane label="DPS" name="DPS"></TabPane>
+			<TabPane label="SFM(Old)" name="SFMOld"></TabPane>
+			<TabPane label="DPS(Old)" name="DPSOld"></TabPane>
+			<TabPane label="SFM→DPS" name="SDMDPS"></TabPane>
+			<TabPane label="DPS→Q-circle" name="DPSQCircle"></TabPane>
+		</Tabs>
+		<Page :total="page.total" :current="page.current" :page-size="page.size" show-total @on-change="chnagePage" v-if="page.issueType != 'meetingTopic'"></Page>
 		<br />
 		<Table border :columns="columns" :data="data" :loading="loading"></Table>
 		<br />
-		<Page :total="page.total" :current="page.current" :page-size="page.size" show-total @on-change="chnagePage"></Page>
+		<Page :total="page.total" :current="page.current" :page-size="page.size" show-total @on-change="chnagePage" v-if="page.issueType != 'meetingTopic'"></Page>
 		<!--新建issues-->
-		<Modal v-model="modal1" title="new issues" width="90%">
+		<Modal v-model="modal1" title="New issue" width="90%">
 			<keep-alive>
 				<addIssues v-on:closeNewIssues="closeNewIssues"></addIssues>
 			</keep-alive>
 			<div slot="footer">
-				<Button type="ghost" size="large" long @click="modal1 = false">关闭</Button>
+				<Button type="ghost" size="large" long @click="modal1 = false">Close Modal</Button>
 			</div>
 		</Modal>
 		<!--issues detail-->
@@ -58,19 +63,25 @@
 				modal2: false,
 				loading: false,
 				page: {
-					status: 'meetingTopic',
+					issueType: 'meetingTopic',
+					topicType: 'SFM',
 					total: 0,
 					current: 1,
 					size: 20
 				},
 				columns: [{
+						title: 'issueType',
+						key: 'issueType',
+						width: 100
+					}, {
 						title: 'status',
 						key: 'status',
 						width: 100
 					},
 					{
 						title: 'type',
-						key: 'type'
+						key: 'type',
+						width: 80
 					},
 					{
 						title: 'issueDate',
@@ -79,11 +90,13 @@
 					},
 					{
 						title: 'qsensor',
-						key: 'qsensor'
+						key: 'qsensor',
+						width: 100
 					},
 					{
 						title: 'prio',
-						key: 'prio'
+						key: 'prio',
+						width: 80
 					},
 					{
 						title: 'description',
@@ -91,8 +104,18 @@
 					},
 					{
 						title: 'picture',
-						key: 'picture'
-					}, {
+						key: 'picture',
+						width: 120,
+						render: (h, params) => {
+							return h('img', {
+								attrs: {
+									src: params.row.picture,
+									width: '100%'
+								}
+							}, 'aaa');
+						}
+					},
+					{
 						title: 'ST Eff',
 						key: 'stEff',
 						align: 'center',
@@ -114,6 +137,10 @@
 								}, '验证');
 							}
 						}
+					},
+					{
+						title: 'short term solution',
+						key: 'shorttermSolution'
 					}, {
 						title: 'LT Eff',
 						key: 'ltEff',
@@ -136,6 +163,10 @@
 								}, '验证');
 							}
 						}
+					},
+					{
+						title: 'Long term solution',
+						key: 'longtermSolution'
 					}, {
 						title: 'RC Eff',
 						key: 'rcEff',
@@ -158,6 +189,10 @@
 								}, '验证');
 							}
 						}
+					},
+					{
+						title: 'Root cause',
+						key: 'rootCause'
 					}, {
 						title: '问题详细',
 						key: 'picture',
@@ -189,7 +224,8 @@
 				this.loading = true;
 				this.data = [];
 				fetchPostUrlencoded('/www/?m=issues&c=issues&a=issues_list', {
-					'status': this.page.status,
+					'type': this.page.issueType,
+					'topicType': this.page.topicType,
 					'current': this.page.current,
 					'size': this.page.size
 				}).then((res) => {
@@ -207,7 +243,12 @@
 				});
 			},
 			changeTabs(e) {
-				this.page.status = e;
+				this.page.issueType = e;
+				this.page.current = 1;
+				this.initData();
+			},
+			changeTopic(e) {
+				this.page.topicType = e;
 				this.page.current = 1;
 				this.initData();
 			},

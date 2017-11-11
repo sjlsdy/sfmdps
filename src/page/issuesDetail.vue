@@ -22,7 +22,7 @@
 			<FormItem label="picture">
 				{{formData.formItem.picture}}
 			</FormItem>
-			<FormItem>
+			<FormItem v-if="formData.formItem.status != 'observation'">
 				<Button type="primary" @click="obsIssues">完成issues</Button>
 			</FormItem>
 		</Form>
