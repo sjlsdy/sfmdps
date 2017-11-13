@@ -33,7 +33,7 @@
 				this.$router.push({
 					path: '/login'
 				});
-				//localStorage.removeItem("userInfo");
+				localStorage.removeItem("userInfo");
 				this.$Message.success('退出成功');
 			},
 		},
