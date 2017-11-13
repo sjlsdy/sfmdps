@@ -1,10 +1,24 @@
 <template>
 	<div>
-		<Form ref="formData" :model="formData.formItem" :label-width="80">
-			<FormItem label="status" prop="status">
-				{{formData.formItem.status}}
+		<Form ref="formData" :model="formData.formItem" :label-width="120">
+			<FormItem label="issueType">
+				{{formData.formItem.issueType}}
 			</FormItem>
-			<FormItem label="type" prop="type">
+			<FormItem label="status">
+				{{formData.formItem.status}}
+				<Dropdown placement="bottom-start" style="margin-left: 20px;" trigger="custom" :visible="statusVisible">
+					<a href="javascript:void(0)" @click="openStatus">
+						Change Status
+						<Icon type="arrow-down-b"></Icon>
+					</a>
+					<DropdownMenu slot="list">
+						<Button type="text" long v-if="formData.formItem.status != 'open'" @click="changeStatus('open')">open</Button>
+						<Button type="text" long v-if="formData.formItem.status != 'observation'" @click="changeStatus('observation')">observation</Button>
+						<Button type="text" long v-if="formData.formItem.status != 'closed'" @click="changeStatus('closed')">Closed</Button>
+					</DropdownMenu>
+				</Dropdown>
+			</FormItem>
+			<FormItem label="type">
 				{{formData.formItem.type}}
 			</FormItem>
 			<FormItem label="issueDate">
@@ -19,11 +33,30 @@
 			<FormItem label="description">
 				{{formData.formItem.description}}
 			</FormItem>
+
+			<FormItem label="ST Eff">
+				{{formData.formItem.stEff == 1?'已验证':'未验证'}}
+			</FormItem>
+			<FormItem label="short term solution	">
+				{{formData.formItem.shortTermSolution}}
+			</FormItem>
+			<FormItem label="LT Eff">
+				{{formData.formItem.ltEff == 1?'已验证':'未验证'}}
+			</FormItem>
+			<FormItem label="Long term solution">
+				{{formData.formItem.longTermSolution}}
+			</FormItem>
+			<FormItem label="RC Eff">
+				{{formData.formItem.rcEff == 1?'已验证':'未验证'}}
+			</FormItem>
+			<FormItem label="Root cause">
+				{{formData.formItem.rootCause}}
+			</FormItem>
+
 			<FormItem label="picture">
-				{{formData.formItem.picture}}
+				<img :src="formData.formItem.picture" />
 			</FormItem>
 			<FormItem v-if="formData.formItem.status != 'observation'">
-				<Button type="primary" @click="obsIssues">完成issues</Button>
 			</FormItem>
 		</Form>
 	</div>
@@ -32,13 +65,13 @@
 <script>
 	import { fetchPostUrlencoded, fetchGet, fetchGetHaveParam } from '../utils/requestHttp.js'
 	export default {
-		props: ['id'],
 		data() {
 			return {
-				data: '',
+				statusVisible: false,
 				formData: {
 					formItem: {
 						id: '',
+						issueType: '',
 						status: '',
 						statusArr: [{
 							value: 'SFM',
@@ -87,9 +120,9 @@
 			}
 		},
 		methods: {
-			initData() {
+			initData(id) {
 				fetchPostUrlencoded('/www/?m=issues&c=issues&a=issues_detail', {
-					'id': this.id
+					'id': id
 				}).then((res) => {
 					if(res.status == 0) {
 						this.$Message.success(res.message);
@@ -108,6 +141,23 @@
 					} else {
 						this.$Message.error(res.message);
 					}
+				});
+			},
+			openStatus() {
+				this.statusVisible = true;
+			},
+			changeStatus(e) {
+				this.statusVisible = false;
+				fetchPostUrlencoded('/www/?m=issues&c=issues&a=issues_status', {
+					id: this.formData.formItem.id,
+					status: e
+				}).then((res) => {
+					if(res.status == 0) {
+						this.$Message.success(res.message);
+					} else {
+						this.$Message.error(res.message);
+					}
+					this.initData(this.formData.formItem.id);
 				});
 			},
 			// 从父级关弹层

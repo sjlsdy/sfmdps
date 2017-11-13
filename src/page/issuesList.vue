@@ -37,7 +37,7 @@
 		<!--issues detail-->
 		<Modal v-model="modal2" title="issues detail" width="90%">
 			<keep-alive>
-				<issuesDetail ref="issuesDetail" :id="issuesDetail.id" v-on:closeIssuesDetail="closeIssuesDetail"></issuesDetail>
+				<issuesDetail ref="issuesDetail" v-on:closeIssuesDetail="closeIssuesDetail"></issuesDetail>
 			</keep-alive>
 			<div slot="footer">
 				<Button type="ghost" size="large" long @click="modal2 = false">关闭</Button>
@@ -213,10 +213,7 @@
 						}
 					}
 				],
-				data: [],
-				issuesDetail: {
-					id: ''
-				}
+				data: []
 			}
 		},
 		methods: {
@@ -289,8 +286,7 @@
 				});
 			},
 			detail(id) {
-				this.issuesDetail.id = id;
-				this.$refs.issuesDetail.initData();
+				this.$refs.issuesDetail.initData(id);
 				this.modal2 = true;
 				/*
 				fetchPostUrlencoded('/www/?m=issues&c=issues&a=issues_obs', {

@@ -58,6 +58,7 @@
 				data: '',
 				formData: {
 					formItem: {
+						status: 'open',
 						issueType: '',
 						issueTypeArr: [{
 							value: 'SFM',
@@ -137,6 +138,7 @@
 				this.$refs['formData'].validate((valid) => {
 					if(valid) {
 						fetchPostUrlencoded('/www/?m=issues&c=issues&a=add_issues', {
+							status: this.formData.formItem.status,
 							issueType: this.formData.formItem.issueType,
 							type: this.formData.formItem.type,
 							issueDate: this.formData.formItem.issueDate,
@@ -150,7 +152,7 @@
 								this.closeParent();
 								// 提交成功重置表单
 								this.$refs["formData"].resetFields();
-								this.formData.formItem.status = '';
+								this.formData.formItem.issueType = '',
 								this.formData.formItem.type = '';
 								this.formData.formItem.qsensor = '';
 								this.formData.formItem.prio = '';
