@@ -232,7 +232,7 @@
 						this.$Message.success(res.message);
 					} else {
 						this.page.total = 0;
-						this.$Message.error(res.message);
+						this.$Message.warning(res.message);
 					}
 					this.loading = false;
 				}).catch(() => {

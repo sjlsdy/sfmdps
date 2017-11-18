@@ -3,7 +3,7 @@
 		<Row>
 			<Col span="8" offset="8">
 			<div class="login-box">
-				<h3>issues</h3>
+				<h3>issue list</h3>
 				<Form ref="loginFormData" :model="loginFormData" :rules="ruleInline" :label-width="80">
 					<FormItem label="账号" prop="username">
 						<Input v-model="loginFormData.username" placeholder="请输入" @on-enter="login('loginFormData')">
@@ -39,8 +39,8 @@
 		data() {
 			return {
 				loginFormData: {
-					phone: '',
-					passWord: ''
+					username: 'sjl',
+					password: '111'
 				},
 				ruleInline: {
 					username: [{
@@ -83,49 +83,24 @@
 				var _self = this;
 				this.$refs[name].validate((valid) => {
 					if(valid) {
-						/*
 						this.$http({
-							method: 'post',
-							url: '/dsg-data/login',
-							data: {
-								"loginName": this.loginFormData.phone,
-								"passWord": md5(this.loginFormData.passWord).toUpperCase()
-							}
-						}).then(response => {
-							this.$Message.success('登录成功!');
-							var arr = [];
-							for(var i = 0; i < response.data.menuInfo.length; i++) {
-								arr.push(response.data.menuInfo[i].code)
-							}
-							var userInfo = {
-								userInfo: response.data.userInfo,
-								token: response.data.token,
-								menuInfoCode: arr
-							}
-							localStorage.setItem("userInfo", JSON.stringify(userInfo));
-							_self.$router.push({
-								path: 'home'
-							});
-						})
-						*/
-						fetchPostUrlencoded('/www/?m=user&c=user&a=login', {
-							'username': this.loginFormData.username,
-							'password': md5(this.loginFormData.password),
-						}).then((res) => {
-							if(res.status == 0) {
-								this.$Message.success(res.message);
+							method: 'get',
+							url: '/www/?m=user&c=user&a=login&username='+ this.loginFormData.username +'&password=' + md5(this.loginFormData.password),
+						}).then(res => {
+							if(res.data.status == 0) {
+								this.$Message.success('登录成功!');
 								var userInfo = {
-									userName: res.data.userName,
-									token: res.data.token,
+									username: res.data.data.username,
+									token: res.data.data.token,
 								}
 								localStorage.setItem("userInfo", JSON.stringify(userInfo));
 								_self.$router.push({
 									path: '/main/issuesList'
 								});
 							} else {
-								this.$Message.error(res.message);
+								this.$Message.error(res.data.message);
 							}
-						});
+						})
 					} else {
 						this.$Message.error('请填写登录信息!');
 					}
@@ -136,5 +111,19 @@
 </script>
 
 <style>
-
+	.login-box {
+		position: relative;
+		top: 50px;
+		background: #fff;
+		padding: 20px;
+		border-radius: 10px;
+		box-shadow: 0 0 20px rgba(0, 0, 0, .1);
+	}
+	
+	.login-box h3 {
+		text-align: center;
+		font-size: 20px;
+		line-height: 2em;
+		margin-bottom: 20px;
+	}
 </style>

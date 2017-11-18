@@ -19,6 +19,7 @@
 </template>
 
 <script>
+	import { fetchPostUrlencoded, fetchGet, fetchGetHaveParam } from '../utils/requestHttp.js'
 	export default {
 		data() {
 			return {
@@ -30,11 +31,20 @@
 				this.loginOutModal = true;
 			},
 			loginoutOk() {
-				this.$router.push({
-					path: '/login'
+				fetchPostUrlencoded('/www/?m=user&c=user&a=login_out', {}).then((res) => {
+					if(res.status == 0) {
+						this.$router.push({
+							path: '/login'
+						});
+						localStorage.removeItem("userInfo");
+						this.$Message.success('退出成功');
+					} else {
+						this.$Message.error(res.message);
+					}
+					this.loading = false;
+				}).catch(() => {
+					this.loading = false;
 				});
-				localStorage.removeItem("userInfo");
-				this.$Message.success('退出成功');
 			},
 		},
 		mounted() {}
