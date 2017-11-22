@@ -65,11 +65,10 @@
 </script>
 
 <style>
-	#app {
-		margin: 20px;
-	}
-	
-	.ivu-modal-wrap {
-		position: absolute;
+	html,
+	body,#app {
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
 	}
 </style>

@@ -1,5 +1,11 @@
 <template>
 	<div>
+		<!--<div v-if="detailBox" style=" overflow-y: auto;position: fixed; right: 0; top: 0; bottom: 0; left: 340px; background: rgba(255,255,255,0.9); box-shadow: 0 0 10px rgba(0,0,0,0.1); z-index: 9;">
+			<issuesDetail></issuesDetail>
+			<issuesDetail></issuesDetail>
+			<issuesDetail></issuesDetail>
+		</div>-->
+		<detailBox ref="detailBox" v-on:closeDetailBox="closeDetailBox"></detailBox>
 		<div style="width: 200px;">
 			<Button type="primary" long @click="modal1 = true"><Icon type="plus-round"></Icon> New issue</Button>
 		</div>
@@ -49,15 +55,18 @@
 <script>
 	import addIssues from './addIssues'
 	import issuesDetail from './issuesDetail'
+	import detailBox from './detailBox'
 	import { fetchPostUrlencoded, fetchGet, fetchGetHaveParam } from '../utils/requestHttp.js'
 	export default {
 		components: {
 			addIssues,
-			issuesDetail
+			issuesDetail,
+			detailBox
 		},
 		name: 'issuesList',
 		data() {
 			return {
+				detailBox: false,
 				msg: 'Welcome to Your Vue.js App',
 				modal1: false,
 				modal2: false,
@@ -285,9 +294,14 @@
 					onCancel: () => {}
 				});
 			},
+			closeDetailBox() {
+				this.initData();
+			},
 			detail(id) {
-				this.$refs.issuesDetail.initData(id);
-				this.modal2 = true;
+				//this.$refs.issuesDetail.initData(id);
+				this.$refs.detailBox.showPage(id);
+				//this.modal2 = true;
+				//this.detailBox = true;
 				/*
 				fetchPostUrlencoded('/www/?m=issues&c=issues&a=issues_obs', {
 					'id': id
